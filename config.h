@@ -46,7 +46,7 @@ static Parameter defconfig[ParameterLast] = {
 	[StrictTLS]           =       { { .i = 1 },     },
 	[Style]               =       { { .i = 1 },     },
 	[WebGL]               =       { { .i = 0 },     },
-	[ZoomLevel]           =       { { .f = 1.0 },   },
+	[ZoomLevel]           =       { { .f = 1.6 },   },
 	[ClipboardNotPrimary] =				{ { .i = 1 },			},
 };
 
@@ -120,6 +120,10 @@ static SiteSpecific certs[] = {
 	{ "://suckless\\.org/", "suckless.org.crt" },
 };
 
+static SearchEngine searchengines[] = {
+  { "d",    "https:/www.duckduckgo.com/?q=%s" },
+};
+
 #define MODKEY GDK_CONTROL_MASK
 
 /* hotkeys */
@@ -127,8 +131,18 @@ static SiteSpecific certs[] = {
  * If you use anything else but MODKEY and GDK_SHIFT_MASK, don't forget to
  * edit the CLEANMASK() macro.
  */
+static char *linkselect_curwin [] = { "/bin/sh", "-c",
+    "surf_linkselect.sh $0 'Link' | xargs -r xprop -id $0 -f _SURF_GO 8s -set _SURF_GO",
+      winid, NULL
+};
+static char *linkselect_newwin [] = { "/bin/sh", "-c",
+    "surf_linkselect.sh $0 'Link (new window)' | xargs -r surf",
+      winid, NULL
+};
 static Key keys[] = {
 	/* modifier              keyval          function    arg */
+  { MODKEY,                GDK_KEY_d,      externalpipe, { .v = linkselect_curwin } },
+  { GDK_SHIFT_MASK|MODKEY, GDK_KEY_d,      externalpipe, { .v = linkselect_newwin } },
 	{ MODKEY,                GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
 	{ MODKEY,                GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
